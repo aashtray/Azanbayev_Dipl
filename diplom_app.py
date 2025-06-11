@@ -1,12 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import os
-
 import cv2
 import face_recognition
 import threading
 import sqlite3
-import 
+import time
 from datetime import datetime
 import string
 import ctypes
