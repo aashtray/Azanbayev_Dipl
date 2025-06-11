@@ -12,15 +12,24 @@ import ctypes
 from ctypes import windll
 import requests
 
+def is_path_allowed(user, target_path, access_levels):
+    import os
+    norm_target = os.path.normcase(os.path.abspath(target_path))
+    for allowed in access_levels.get(user, []):
+        norm_allowed = os.path.normcase(os.path.abspath(allowed))
+        if norm_target.startswith(norm_allowed):
+            return True
+    return False
+
 # === Конфигурация ===
 ACCESS_LEVELS = {
-    "azaza1": [r"C:\Users\ASHTRAY\Azanbayev_Dipl\azaza\level_1", r"C:\STEAM", r"C:/"],
-    "azaza2": [r"C:\Users\ASHTRAY\Azanbayev_Dipl\azaza\level_1", r"C:\Games"],
+    "azaza1": [r"C:\Users\ASHTRAY\Azanbayev_Dipl\azaza\level_1", r"C:\STEAM"],
+    "azaza2": [r"C:\Users\ASHTRAY\Azanbayev_Dipl\azaza\level_1", r"C:\Config"],
     "azaza3": [r"C:\Users\ASHTRAY\Azanbayev_Dipl\azaza\level_2"]
 }
 
 TELEGRAM_BOT_TOKEN = "8104290452:AAHCx_nFt_Y8VJntCY2bfWiaBRnLyOgHNfM"
-# Ваш chat_id (получить можно через @userinfobot или @getmyid_bot)
+#chat_id можно через @userinfobot или @getmyid_bot
 TELEGRAM_CHAT_ID = "5415707803"
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -250,8 +259,7 @@ class CustomExplorer:
                 error_msg = "Не удалось распознать лицо." if user != "unknown_no_camera" else "Камера недоступна."
                 self.root.after(0, lambda: messagebox.showerror("Ошибка доступа", error_msg))
                 return
-            allowed_paths = ACCESS_LEVELS.get(user, [])
-            has_access = any(path.startswith(p) for p in allowed_paths)
+            has_access = is_path_allowed(user, path, ACCESS_LEVELS)
             if has_access:
                 try:
                     self.logger.log_attempt(user, path, "Доступ разрешен", "ОК", user, photo_path)
