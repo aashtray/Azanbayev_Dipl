@@ -6,7 +6,7 @@ import cv2
 import face_recognition
 import threading
 import sqlite3
-import time
+import 
 from datetime import datetime
 import string
 import ctypes
